@@ -1,36 +1,8 @@
 ![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.jpg)
 
-## About this repository
-This accelerator was built to provide developers with all of the resources needed to build a solution to....
+# AI-Powered Insurance Claims Automation Solution Accelerator
 
-
-## Getting Started 
-Start by deploying the resources needed for this solution: 
-
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](path_to_azuredeploy.json)
-
-1. Clone this repository and navigate to the root of the directory  
-2. Go to the [Deployment Guide](./DEPLOY.md) for the steps you need to take to deploy this solution 
-
-## Prerequisites
-In order to successfully complete your solution, you will need to have access to and or provisioned the following:
-1. item 1
-2. item 2
-3. item 3
-
-### Optional
-1. item 1
-
-## Azure Platform
-The directions provided for this repository assume fundemental working knowledge of ...
-
-For additional training and support, please see:
- 1. item 1
- 2. item 2
- 3. item 3
-
-## Process Overview  
-
+![Coming Soon](./images/ComingSoon.png)
 
 ## License
 Copyright (c) Microsoft Corporation
