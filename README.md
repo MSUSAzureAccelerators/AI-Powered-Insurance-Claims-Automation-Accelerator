@@ -1,5 +1,5 @@
 ![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.jpg)
-# Automated Document Ingestion Solution Accelerator
+# AI-Powered Insurance Claims Automation Solution Accelerator
 
 Handling Claims processing through an intelligent agent with cognitive skills to handle image, ID, and documents with goal to reduce claims processing time and manual effort in end-to-end claims processing for better customer experience 
 
