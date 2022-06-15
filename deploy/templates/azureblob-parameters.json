@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscription_id": {
+      "value": "9c1bf73d-cfe5-4113-bc28-5f637bb222ad"
+    },
+    "connections_azureblob_name": {
+      "value": "azureblob"
+    },
+    "storage_account_name": {
+      "value": "fsihackhsa"
+    },
+    "storage_access_key": {
+      "value": "xyyLedidw3Bz3KYq7fO8BfvHsq3z1ptKbftw1oqiRTpq1ryaV6/hmm/az6shG4ByRNBqi0pRnhVb+ASt2jd3GQ=="
+    },
+    "location": {
+      "value": "eastus"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscription_id": {
+      "value": "9c1bf73d-cfe5-4113-bc28-5f637bb222ad"
+    },
+    "connections_formrecognizer_name": {
+      "value": "formrecognizer"
+    },
+    "formrecognizer_key": {
+      "value": "8ca312fac01542c18719cdba0e207a27"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "predictive_url": {
+      "value": "https://eastus.api.cognitive.microsoft.com/"
+    }
+  }
+}

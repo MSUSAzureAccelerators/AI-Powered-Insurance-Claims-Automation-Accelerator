@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "botservice_endpoint": {
+      "value": "https://fsihackhwebapiazurewebsites.net/api/messages"
+    },
+    "botservice_name": {
+      "value": "fsihackhbot"
+    },
+    "msaappId": {
+      "value": "54a9682e-5a57-4094-89ec-704dde090c93"
+    }
+  }
+}

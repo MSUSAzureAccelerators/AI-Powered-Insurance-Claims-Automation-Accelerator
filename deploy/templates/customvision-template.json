@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscription_id":{
+            "type": "securestring"
+        },
+        "connections_customvision_name": {
+            "type": "string"
+        },
+        "customvision_key": {
+            "type": "securestring"
+        },
+        "location": {
+            "type": "string"
+        },
+		"predictive_url": {
+			"type": "string"
+		}
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_customvision_name')]",
+            "location": "[parameters('location')]",
+			"kind": "V1",
+            "properties": {
+                "displayName": "fsihackcogsvcpred",
+                "customParameterValues": {
+					"predictionKey": "[parameters('customvision_key')]"
+				},
+				"nonSecretParameterValues": {
+                    "siteUrl": "[parameters('predictive_url')]"
+                },
+                "api": {
+					"name": "[parameters('connections_customvision_name')]",
+                    "displayName": "Custom Vision",
+                    "description": "Azure Custom Vision Service is a Microsoft Cognitive Services product for tagging images using your custom computer vision model.",
+					"type": "Microsoft.Web/locations/managedApis",
+                    "id": "[concat('/subscriptions/', parameters('subscription_id'), '/providers/Microsoft.Web/locations/', parameters('location'), '/managedApis/', parameters('connections_customvision_name'))]"
+                }
+            }
+        }
+    ]
+}

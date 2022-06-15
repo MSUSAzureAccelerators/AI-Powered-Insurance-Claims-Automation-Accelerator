@@ -1,0 +1,511 @@
+Connect-AzAccount
+$context = Get-AzSubscription -SubscriptionId a96b8f1a-f683-4f26-918c-f083e93873fc
+Set-AzContext @context
+Install-Module Az.Search
+
+$resourceGroupName = 'FSIUC3-478734'
+$subscriptionId = 'a96b8f1a-f683-4f26-918c-f083e93873fc'
+$location = 'eastus'
+Get-AzResourceGroup `
+			-Name $resourceGroupName `
+			-Location $location `
+
+if ($ScriptRoot -eq "" -or $null -eq $ScriptRoot ) {
+	$ScriptRoot = (Get-Location).path
+}
+
+$prefix = 'od478734'
+$storageAccountName = $prefix + "sa";
+$storageContainerFormsImages = "images"
+$storageContainerFormsInsurance = "insurance"
+$storageContainerFormsProcessing = "processing"
+$storageContainerProcessSucceeded = "succeeded"
+$storageContainerProcessUpload = "upload"
+
+$storageAccount = New-AzStorageAccount `
+            -AccountName $storageAccountName `
+            -ResourceGroupName $resourceGroupName `
+            -Location $location `
+            -SkuName Standard_LRS `
+            -Kind StorageV2 
+
+$storageContext = $storageAccount.Context
+
+Enable-AzStorageStaticWebsite `
+	-Context $storageContext `
+	-IndexDocument "index.html" `
+	-ErrorDocument404Path "error.html"
+
+$CorsRules = (@{
+		AllowedHeaders  = @("*");
+		AllowedOrigins  = @("*");
+		MaxAgeInSeconds = 0;
+		AllowedMethods  = @("Get", "Put", "Post");
+		ExposedHeaders  = @("*");
+	})
+
+Set-AzStorageCORSRule -ServiceType Blob -CorsRules $CorsRules -Context $storageContext
+
+$storageContainerNames = @($storageContainerFormsImages, $storageContainerFormsInsurance, $storageContainerFormsProcessing, $storageContainerProcessSucceeded, $storageContainerProcessUpload)
+
+foreach ($containerName in $storageContainerNames) {
+   new-AzStoragecontainer `
+                -Name $containerName `
+                -Context $storageContext `
+                -Permission container
+}
+
+$storageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $storageAccountName).Value[0]
+
+$storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=' + $storageAccountName + ';AccountKey=' + $storageAccountKey + ';EndpointSuffix=core.windows.net' 
+
+$formRecognizerName = $prefix + "frcs"
+
+New-AzCognitiveServicesAccount `
+		-ResourceGroupName $resourceGroupName `
+		-Name $formRecognizerName `
+		-Type FormRecognizer `
+		-SkuName S0 `
+		-Location $location
+
+$formRecognizerEndpoint =  (Get-AzCognitiveServicesAccount -ResourceGroupName $resourceGroupName -Name $formRecognizerName).Endpoint		
+$formRecognizerSubscriptionKey =  (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -Name $formRecognizerName).Key1	
+
+$cognitiveServicesName = $prefix + "cs"
+$luisAuthoringName = $prefix + "lacs"
+
+New-AzCognitiveServicesAccount `
+		-ResourceGroupName $resourceGroupName `
+		-Name $luisAuthoringName `
+		-Type LUIS.Authoring `
+		-SkuName F0 `
+		-Location 'westus'
+
+$luisAuthoringEndpoint =  (Get-AzCognitiveServicesAccount -ResourceGroupName $resourceGroupName -Name $luisAuthoringName).Endpoint		
+$luisAuthoringSubscriptionKey =  (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -Name $luisAuthoringName).Key1		
+
+$luisPredictionName = $prefix + "lpcs"
+New-AzCognitiveServicesAccount `
+		-ResourceGroupName $resourceGroupName `
+		-Name $luisPredictionName `
+		-Type LUIS `
+		-SkuName F0 `
+		-Location 'westus'
+$luisPredictionEndpoint =  (Get-AzCognitiveServicesAccount -ResourceGroupName $resourceGroupName -Name $luisPredictionName).Endpoint
+$luisPredictionSubscriptionKey =  (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -Name $luisPredictionName).Key1		
+
+$customVisionTrain = $prefix + "cvtraincs"
+New-AzCognitiveServicesAccount `
+		-ResourceGroupName $resourceGroupName `
+		-Name $customVisionTrain `
+		-Type CustomVision.Training `
+		-SkuName S0 `
+		-Location $location
+
+$customVisionTrainEndpoint =  (Get-AzCognitiveServicesAccount -ResourceGroupName $resourceGroupName -Name $customVisionTrain).Endpoint		
+$customVisionTrainSubscriptionKey =  (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -Name $customVisionTrain).Key1
+
+New-AzCognitiveServicesAccount `
+		-ResourceGroupName $resourceGroupName `
+		-Name $customVisionPredict `
+		-Type CustomVision.Prediction `
+		-SkuName S0 `
+		-Location $location
+
+
+# Get Key and Endpoint
+$customVisionPredictEndpoint =  (Get-AzCognitiveServicesAccount -ResourceGroupName $resourceGroupName -Name $customVisionPredict).Endpoint		
+$customVisionPredictSubscriptionKey =  (Get-AzCognitiveServicesAccountKey -ResourceGroupName $resourceGroupName -Name $customVisionPredict).Key1		
+
+$appServicePlanName = $prefix + "asp"
+$currentApsName = Get-AzAppServicePlan -Name $appServicePlanName -ResourceGroupName $resourceGroupName
+if ($currentApsName.Name -eq $null ) {
+	New-AzAppServicePlan `
+        -Name $appServicePlanName `
+        -Location $location `
+        -ResourceGroupName $resourceGroupName `
+        -Tier Basic
+}
+
+$cognitiveSearchName = $prefix + "azs"
+$currentAzSearchName = Get-AzSearchService -ResourceGroupName $resourceGroupName -Name $cognitiveSearchName
+if ($null -eq $currentAzSearchName.Name) {
+	New-AzSearchService `
+			-ResourceGroupName $resourceGroupName `
+			-Name $cognitiveSearchName `
+			-Sku "Basic" `
+			-Location $location
+}
+$cognitiveSearchKey = (Get-AzSearchAdminKeyPair -ResourceGroupName $resourceGroupName -ServiceName $cognitiveSearchName).Primary
+$cognitiveSearchEndPoint = 'https://' + $cognitiveSearchName + '.search.windows.net'
+
+$cosmosAccountName = $prefix + "cdbsql"
+$cosmosDatabaseName = "fsihack"
+$cosmosInsuranceContainer = "insurance"
+$cosmosDrivingLicenseContainer = "drivinglicense"
+$cosmosServiceEstimatesContainer = "serviceestimates"
+$cosmosClaimsContainer = "claims"
+
+$cosmosLocations = @(
+    @{ "locationName" = "East US"; "failoverPriority" = 0 }
+)
+$consistencyPolicy = @{
+    "defaultConsistencyLevel" = "BoundedStaleness";
+    "maxIntervalInSeconds"    = 300;
+    "maxStalenessPrefix"      = 100000
+}
+$cosmosProperties = @{
+    "databaseAccountOfferType"     = "standard";
+    "locations"                    = $cosmosLocations;
+    "consistencyPolicy"            = $consistencyPolicy;
+    "enableMultipleWriteLocations" = "true"
+}
+
+New-AzResource `
+	-ResourceType "Microsoft.DocumentDb/databaseAccounts" `
+	-ApiVersion "2015-04-08" `
+	-ResourceGroupName $resourceGroupName `
+	-Location $location `
+	-Name $cosmosAccountName `
+	-PropertyObject ($cosmosProperties) `
+	-Force
+
+$cosmosDatabaseProperties = @{
+    "resource" = @{ "id" = $cosmosDatabaseName };
+    "options"  = @{ "Throughput" = 400 }
+} 
+$cosmosResourceName = $cosmosAccountName + "/sql/" + $cosmosDatabaseName
+$currentCosmosDb = Get-AzResource `
+        -ResourceType "Microsoft.DocumentDb/databaseAccounts/apis/databases" `
+        -ResourceGroupName $resourceGroupName `
+        -Name $cosmosResourceName 
+		
+if ($null -eq $currentCosmosDb.Name) {
+	New-AzResource `
+        -ResourceType "Microsoft.DocumentDb/databaseAccounts/apis/databases" `
+        -ApiVersion "2015-04-08" `
+        -ResourceGroupName $resourceGroupName `
+        -Name $cosmosResourceName `
+        -PropertyObject ($cosmosDatabaseProperties) `
+        -Force
+}
+
+$cosmosContainerNames = @($cosmosInsuranceContainer,$cosmosDrivingLicenseContainer,$cosmosServiceEstimatesContainer,$cosmosClaimsContainer)
+foreach ($containerName in $cosmosContainerNames) {
+    $containerResourceName = $cosmosAccountName + "/sql/" + $cosmosDatabaseName + "/" + $containerName
+	 $cosmosContainerProperties = @{
+            "resource" = @{
+                "id"           = $containerName; 
+                "partitionKey" = @{
+                    "paths" = @("/FormType"); 
+                    "kind"  = "Hash"
+                }; 
+            };
+            "options"  = @{ }
+        }
+		New-AzResource `
+				-ResourceType "Microsoft.DocumentDb/databaseAccounts/apis/databases/containers" `
+				-ApiVersion "2015-04-08" `
+				-ResourceGroupName $resourceGroupName `
+				-Name $containerResourceName `
+				-PropertyObject $cosmosContainerProperties `
+				-Force 
+}
+
+$cosmosEndPoint = (Get-AzResource -ResourceType "Microsoft.DocumentDb/databaseAccounts" `
+     -ApiVersion "2015-04-08" -ResourceGroupName $resourceGroupName `
+     -Name $cosmosAccountName | Select-Object Properties).Properties.documentEndPoint
+$cosmosPrimaryKey = (Invoke-AzResourceAction -Action listKeys `
+    -ResourceType "Microsoft.DocumentDb/databaseAccounts" -ApiVersion "2015-04-08" `
+    -ResourceGroupName $resourceGroupName -Name $cosmosAccountName -Force).primaryMasterKey
+$cosmosConnectionString = (Invoke-AzResourceAction -Action listConnectionStrings `
+    -ResourceType "Microsoft.DocumentDb/databaseAccounts" -ApiVersion "2015-04-08" `
+    -ResourceGroupName $resourceGroupName -Name $cosmosAccountName -Force).connectionStrings.connectionString[0]
+
+$trainingFilePath = "$ScriptRoot\Train\"
+$testFilePath = "$ScriptRoot\Test\"
+$trainingFormContainers = New-Object System.Collections.ArrayList($null)
+$trainingFormContainers.Clear()
+$testingFormContainers = New-Object System.Collections.ArrayList($null)
+$testingFormContainers.Clear()
+$folders = Get-ChildItem $trainingFilePath
+$formContainerName = "train"
+Write-Host Create Container $formContainerName	 -ForegroundColor Green		
+New-AzStoragecontainer `
+	-Name $formContainerName `
+	-Context $storageContext  `
+	-Permission container
+foreach ($folder in $folders) {
+	$trainingFormContainers.Add($formContainerName)
+	$files = Get-ChildItem $folder
+	foreach($file in $files){
+		$filePath = $trainingFilePath + $folder.Name + '\' + '\' + $file.Name
+		Write-Host Upload File $filePath -ForegroundColor Green
+		Set-AzStorageBlobContent `
+			-File $filePath `
+			-Container $formContainerName `
+			-Blob $file.Name `
+			-Context $storageContext `
+			-Force
+		
+	}
+}
+$folders = Get-ChildItem $testFilePath
+$formContainerName = "test"
+Write-Host Create Container $formContainerName	 -ForegroundColor Green		
+New-AzStoragecontainer `
+	-Name $formContainerName `
+	-Context $storageContext  `
+	-Permission container
+foreach ($folder in $folders) {
+	$trainingFormContainers.Add($formContainerName)
+	$files = Get-ChildItem $folder
+	foreach($file in $files){
+		$filePath = $testFilePath + $folder.Name + '\' + '\' + $file.Name
+		Write-Host Upload File $filePath -ForegroundColor Green
+		Set-AzStorageBlobContent `
+			-File $filePath `
+			-Container $formContainerName `
+			-Blob $file.Name `
+			-Context $storageContext `
+			-Force
+		
+	}
+}
+
+$luisAppImportUrl = $luisAuthoringEndpoint + "luis/api/v2.0/apps/import"
+$outArray.Add("v_luisAppImportUrl=$luisAppImportUrl")
+
+$luisHeader = @{
+	"Ocp-Apim-Subscription-Key" = $luisAuthoringSubscriptionKey
+}
+$luisModels = @{ }
+$luisModels.Clear()
+$trainingLuisFilePath = "$ScriptRoot\luis\"
+
+$files = Get-ChildItem $trainingLuisFilePath
+foreach($file in $files){
+	$fileWithExtension = $trainingLuisFilePath + $file.Name.toLower()
+	$luisApplicationName = (Get-Item $fileWithExtension).Basename
+	$luisApplicationFilePath = $trainingLuisFilePath + $file.Name
+	$luisApplicationTemplate = Get-Content $luisApplicationFilePath
+	$appVersion = '0.1'
+	
+	$luisAppResponse = Invoke-RestMethod -Method Post `
+				-Uri $luisAppImportUrl -ContentType "application/json" `
+				-Headers $luisHeader `
+				-Body $luisApplicationTemplate
+	$luisAppId = $luisAppResponse
+	$luisModels[$luisApplicationName] = $luisAppId
+
+	$luisTrainUrl = $luisAuthoringEndpoint + "luis/authoring/v3.0-preview/apps/" + $luisAppId + "/versions/" + $appVersion + "/train"
+	
+	Write-Host Training Luis Models... -ForegroundColor Green
+	$luisAppTrainResponse = Invoke-RestMethod -Method Post `
+				-Uri $luisTrainUrl `
+				-Headers $luisHeader
+	
+	# Get Training Status
+	# For now wait for 10 seconds
+	Start-Sleep -s 10
+	$luisAppTrainResponse = Invoke-RestMethod -Method Get `
+				-Uri $luisTrainUrl `
+				-Headers $luisHeader
+
+	$publishJsonBody = "{
+		'versionId': '$appVersion',
+		'isStaging': false,
+		'directVersionPublish': false
+	}"
+
+	#Publish the Model
+	Write-Host Publish Luis Models... -ForegroundColor Green
+	$luisPublihUrl = $luisAuthoringEndpoint + "luis/authoring/v3.0-preview/apps/" + $luisAppId + "/publish"
+	$luisAppPublishResponse = Invoke-RestMethod -Method Post `
+				-Uri $luisPublihUrl -ContentType "application/json" `
+				-Headers $luisHeader `
+				-Body $luisApplicationTemplate
+	$luisAppPublishResponse
+}
+
+$azureBlobApiConnectionName = "azureblob"
+$azureblobTemplateFilePath = "$ScriptRoot\templates\azureblob-template.json"
+$azureblobParametersFilePath = "$ScriptRoot\templates\azureblob-parameters.json"
+$azureblobParametersTemplate = Get-Content $azureblobParametersFilePath | ConvertFrom-Json
+$azureblobParameters = $azureblobParametersTemplate.parameters
+$azureblobParameters.subscription_id.value = $subscriptionId
+$azureblobParameters.storage_account_name.value = $storageAccountName
+$azureblobParameters.storage_access_key.value = $storageAccountKey
+$azureblobParameters.location.value = $location
+$azureblobParameters.connections_azureblob_name.value = $azureBlobApiConnectionName
+$azureblobParametersTemplate | ConvertTo-Json | Out-File $azureblobParametersFilePath
+
+$azurecustVisionApiConnectionName = "cognitiveservicescustomvision"
+$outArray.Add("v_azureBlobApiConnectionName = $azurecustVisionApiConnectionName")
+
+$azurecustVisionTemplateFilePath = "$ScriptRoot\templates\customvision-template.json"
+$azurecustVisionParametersFilePath = "$ScriptRoot\templates\customvision-parameters.json"
+$azurecustVisionParametersTemplate = Get-Content $azurecustVisionParametersFilePath | ConvertFrom-Json
+$azurecustVisionParameters = $azurecustVisionParametersTemplate.parameters
+$azurecustVisionParameters.subscription_id.value = $subscriptionId
+$azurecustVisionParameters.predictive_url.value = $customVisionPredictEndpoint
+$azurecustVisionParameters.customvision_key.value = $customVisionPredictSubscriptionKey
+$azurecustVisionParameters.location.value = $location
+$azurecustVisionParameters.connections_customvision_name.value = $azurecustVisionApiConnectionName
+$azurecustVisionParametersTemplate | ConvertTo-Json | Out-File $azurecustVisionParametersFilePath
+
+Write-Host Deploying $azurecustVisionApiConnectionName"..." -ForegroundColor Green
+New-AzResourceGroupDeployment `
+		-ResourceGroupName $resourceGroupName `
+		-Name $azurecustVisionApiConnectionName `
+		-TemplateFile $azurecustVisionTemplateFilePath `
+		-TemplateParameterFile $azurecustVisionParametersFilePath
+
+
+$azureformRecognizerApiConnectionName = "formrecognizer"
+$outArray.Add("v_azureBlobApiConnectionName = $azureformRecognizerApiConnectionName")
+
+$azureformRecognizerTemplateFilePath = "$ScriptRoot\templates\formrecognizer-template.json"
+$azureformRecognizerParametersFilePath = "$ScriptRoot\templates\formrecognizer-parameters.json"
+$azureformRecognizerParametersTemplate = Get-Content $azureformRecognizerParametersFilePath | ConvertFrom-Json
+$azureformRecognizerParameters = $azureformRecognizerParametersTemplate.parameters
+$azureformRecognizerParameters.subscription_id.value = $subscriptionId
+$azureformRecognizerParameters.predictive_url.value = $customVisionPredictEndpoint
+$azureformRecognizerParameters.formrecognizer_key.value = $customVisionPredictSubscriptionKey
+$azureformRecognizerParameters.location.value = $location
+$azureformRecognizerParameters.connections_formrecognizer_name.value = $azureformRecognizerApiConnectionName
+$azureformRecognizerParametersTemplate | ConvertTo-Json | Out-File $azureformRecognizerParametersFilePath
+
+Write-Host Deploying $azureformRecognizerApiConnectionName"..." -ForegroundColor Green
+New-AzResourceGroupDeployment `
+		-ResourceGroupName $resourceGroupName `
+		-Name $azureformRecognizerApiConnectionName `
+		-TemplateFile $azureformRecognizerTemplateFilePath `
+		-TemplateParameterFile $azureformRecognizerParametersFilePath
+
+
+$azuredocumentDbApiConnectionName = "documentdb"
+
+$azuredocumentDbTemplateFilePath = "$ScriptRoot\templates\cosmosdb-template.json"
+$azuredocumentDbParametersFilePath = "$ScriptRoot\templates\cosmosdb-parameters.json"
+$azuredocumentDbParametersTemplate = Get-Content $azuredocumentDbParametersFilePath | ConvertFrom-Json
+$azuredocumentDbParameters = $azuredocumentDbParametersTemplate.parameters
+$azuredocumentDbParameters.subscription_id.value = $subscriptionId
+$azuredocumentDbParameters.cosmosdb_key.value = $cosmosPrimaryKey
+$azuredocumentDbParameters.location.value = $location
+$azuredocumentDbParameters.connections_cosmosdb_name.value = $azuredocumentDbApiConnectionName
+$azuredocumentDbParametersTemplate | ConvertTo-Json | Out-File $azuredocumentDbParametersFilePath
+
+Write-Host Deploying $azuredocumentDbApiConnectionName"..." -ForegroundColor Green
+New-AzResourceGroupDeployment `
+		-ResourceGroupName $resourceGroupName `
+		-Name $azuredocumentDbApiConnectionName `
+		-TemplateFile $azuredocumentDbTemplateFilePath `
+		-TemplateParameterFile $azuredocumentDbParametersFilePath
+
+$logicAppName = $prefix + "lapp"
+$logicAppTemplateFilePath = "$ScriptRoot\templates\fsihacklapp-template.json"
+$logicAppParametersFilePath = "$ScriptRoot\templates\fsihacklapp-parameters.json"
+$azureblobResourceid = Get-AzResource `
+    -ResourceGroupName $resourceGroupName `
+    -Name $azureBlobApiConnectionName
+$azurecustVisionResourceid  = Get-AzResource `
+    -ResourceGroupName $resourceGroupName `
+    -Name $azurecustVisionApiConnectionName 
+$azureformRecognizerResourceid  = Get-AzResource `
+    -ResourceGroupName $resourceGroupName `
+    -Name $azureformRecognizerApiConnectionName
+$azuredocumentDbResourceid  = Get-AzResource `
+    -ResourceGroupName $resourceGroupName `
+    -Name $azuredocumentDbApiConnectionName	
+
+$logicAppParametersTemplate = Get-Content $logicAppParametersFilePath | ConvertFrom-Json
+$logicAppParameters = $logicAppParametersTemplate.parameters
+$logicAppParameters.workflows_fsihacklogicapp_name.value = $logicAppName
+$logicAppParameters.subscription_id.value = $subscriptionId
+$logicAppParameters.resource_group.value = $resourceGroupName
+$logicAppParameters.location.value = $location
+$logicAppParameters.connections_azureblob_externalid.value = $azureblobResourceid.Id
+$logicAppParameters.connections_cognitiveservicescustomvision_externalid.value = $azurecustVisionResourceid.Id
+$logicAppParameters.connections_formrecognizer_externalid.value = $azureformRecognizerResourceid.Id
+$logicAppParameters.connections_documentdb_externalid.value = $azuredocumentDbResourceid.Id
+$logicAppParametersTemplate | ConvertTo-Json | Out-File $logicAppParametersFilePath
+
+Write-Host Deploying Logic App to Process Pdf ... -ForegroundColor Green
+New-AzResourceGroupDeployment `
+        -ResourceGroupName $resourceGroupName `
+        -Name $logicAppName `
+        -TemplateFile $logicAppTemplateFilePath `
+        -TemplateParameterFile $logicAppParametersFilePath
+
+
+
+Default services created 
+	Storage Account
+	Form Recognizer
+	Luis (Authoring & Prediction)
+		TODO : Publishing to Prediction Resource
+	Custom Vision (Training & Prediction)
+	App Service Plan
+	Search Service
+	Cosmos Db
+	Create Cosmos DB & Containers
+	Upload Test/Train data to storage container
+	Train LUIS model
+	Web API Connection 
+		Blob
+		Custom Vision (Might have to do it manually for all deployment) (cognitiveservicescustomvision)
+		Form Recognizer (Might have to do it manually for all deployment) (formrecognizer)
+		Documentdb (accesskey not populating)
+	Logic App
+		There might be a need to change the web api connection for Custom Vision as well as Form Recognizer
+	App Services
+	Azure Bot service
+
+	Key vault
+
+
+Steps : Day 1
+	* Walk through end to end demo
+	* Custom Vision
+		* Create a project in Custom Vision
+		* Upload the images & classify the documents
+		* Train the Model
+		* Publish the Model (Prediction URL) (ModelName should be latest) (https://customvis478734prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/5b4c6533-835e-4248-8ff9-6393d327694a/classify/iterations/latest/url)
+			* Record the ProjectId & Url
+		* Test the Model in the UI
+		* Show Improving the model concept via Prediction & retrain
+		* Test the model using PostMan
+	* Form Recognizer
+		* Walk through the Form Recognizer Studio
+		* Test the out of the box Models
+			* Driving License
+			* Invoice/Service Estimate
+			* General(for Insurance)
+		* Build Custom Model 
+			* Create Labels & Tag
+			* Train Model
+			* Record ModelId
+			* Test Model using UI
+			* Test Model using PostMan
+		* NOTE : We may not be able to use the FR model created in Form Recognizer studio due to new release.  Once the experience is shown to the user, fallback to fott tool and use the same data and create a model and use that ModelId in Logic app
+	* Logic Apps
+		* Walk through the Logic app workflow
+		* Modify Custom Vision ProjectId
+		* Modify the custom model Id
+		* Test the workflow (by uploading the document in Blob storage account)
+			* For each document Type
+		* Show the Debug history and execution of the workflow
+		* Show the documents persisted in CosmosDb
+
+Steps : Day 2
+	* Cognitive Search
+		* Concept around Cognitive Search (Data Source, Index, Indexer)
+		* Execute indexer to pull data from CosmosDb	
+	* Bot Framework Composer
+		* Walk through the Composer and the code (including the Bot Service, Channels concepts)
+		* Test the Bot using "Test in webchat"
+		* Test the Bot(if possible) within Bot Framework Composer or Emulator
+		* Execute the E2E workflow using HTML/Webchat
+	* Show the Static Web API to display the output of the Azure search
+

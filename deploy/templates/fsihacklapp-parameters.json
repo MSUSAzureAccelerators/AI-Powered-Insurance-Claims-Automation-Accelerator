@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workflows_fsihacklogicapp_name": {
+      "value": "fsihackhlapp"
+    },
+    "connections_azureblob_externalid": {
+      "value": "/subscriptions/9c1bf73d-cfe5-4113-bc28-5f637bb222ad/resourceGroups/fsihackh/providers/Microsoft.Web/connections/azureblob"
+    },
+    "connections_formrecognizer_externalid": {
+      "value": "/subscriptions/9c1bf73d-cfe5-4113-bc28-5f637bb222ad/resourceGroups/fsihackh/providers/Microsoft.Web/connections/formrecognizer"
+    },
+    "connections_cognitiveservicescustomvision_externalid": {
+      "value": "/subscriptions/9c1bf73d-cfe5-4113-bc28-5f637bb222ad/resourceGroups/fsihackh/providers/Microsoft.Web/connections/cognitiveservicescustomvision"
+    },
+    "connections_documentdb_externalid": {
+      "value": "/subscriptions/9c1bf73d-cfe5-4113-bc28-5f637bb222ad/resourceGroups/fsihackh/providers/Microsoft.Web/connections/documentdb"
+    },
+    "subscription_id": {
+      "value": "9c1bf73d-cfe5-4113-bc28-5f637bb222ad"
+    },
+    "location": {
+      "value": "eastus"
+    },
+    "resource_group": {
+      "value": "fsihackh"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "botservice_endpoint": {
+            "type": "String"
+        },
+        "botservice_name": {
+            "defaultValue": "",
+            "type": "String"
+        },
+		"msaappId": {
+            "defaultValue": "",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.BotService/botServices",
+            "apiVersion": "2021-05-01-preview",
+            "name": "[parameters('botservice_name')]",
+            "location": "global",
+            "sku": {
+                "name": "S1"
+            },
+            "kind": "azurebot",
+            "properties": {
+                "displayName": "[parameters('botservice_name')]",
+                "msaAppId": "[parameters('msaappId')]",
+                "msaAppType": "MultiTenant",
+                "luisAppIds": [],
+                "schemaTransformationVersion": "1.3",
+                "isCmekEnabled": false,
+                "isIsolated": false,
+                "disableLocalAuth": false,
+                "endpoint": "[parameters('botservice_endpoint')]"
+            }
+        },
+        {
+            "type": "Microsoft.BotService/botServices/channels",
+            "apiVersion": "2021-05-01-preview",
+            "name": "[concat(parameters('botservice_name'), '/WebChatChannel')]",
+            "location": "global",
+            "dependsOn": [
+                "[resourceId('Microsoft.BotService/botServices', parameters('botservice_name'))]"
+            ],
+            "properties": {
+                "properties": {
+                    "sites": [
+                        {
+                            "siteName": "Default Site",
+                            "isEnabled": true,
+                            "enablePreview": true
+                        }
+                    ]
+                },
+                "channelName": "WebChatChannel"
+            }
+        }
+    ]
+}

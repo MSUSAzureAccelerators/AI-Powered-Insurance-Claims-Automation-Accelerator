@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscription_id":{
+            "type": "securestring"
+        },
+        "connections_cosmosdb_name": {
+            "type": "string"
+        },
+		"cosmosdb_account_name": {
+			"type": "string"
+		},
+        "cosmosdb_key": {
+            "type": "securestring"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_cosmosdb_name')]",
+            "location": "[parameters('location')]",
+			"kind": "V1",
+            "properties": {
+                "displayName": "fsihackcosmos",
+                "customParameterValues": {
+					"predictionKey": "[parameters('cosmosdb_key')]"
+				},
+				"nonSecretParameterValues": {
+                    "databaseAccount": "fsihack",
+					"accountId": "[parameters('cosmosdb_account_name')]"
+                },
+                "api": {
+					"name": "[parameters('connections_cosmosdb_name')]",
+                    "displayName": "Azure Cosmos DB",
+                    "description": "Azure Cosmos DB is a globally distributed multi-model database service designed to enable you to elastically and independently scale throughput and storage across any number of geographical regions with a comprehensive SLA.",
+					"type": "Microsoft.Web/locations/managedApis",
+                    "id": "[concat('/subscriptions/', parameters('subscription_id'), '/providers/Microsoft.Web/locations/', parameters('location'), '/managedApis/', parameters('connections_cosmosdb_name'))]"
+                }
+            }
+        }
+    ]
+}

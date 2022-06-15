@@ -1,0 +1,223 @@
+{
+  "luis_schema_version": "7.0.0",
+  "intents": [
+    {
+      "name": "Cancel",
+      "features": []
+    },
+    {
+      "name": "ExistingClaim",
+      "features": []
+    },
+    {
+      "name": "Help",
+      "features": []
+    },
+    {
+      "name": "NewClaim",
+      "features": []
+    },
+    {
+      "name": "None",
+      "features": []
+    }
+  ],
+  "entities": [],
+  "hierarchicals": [],
+  "composites": [],
+  "closedLists": [],
+  "prebuiltEntities": [],
+  "utterances": [
+    {
+      "text": "abort",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "at what stage is my claim?",
+      "intent": "ExistingClaim",
+      "entities": []
+    },
+    {
+      "text": "can i know the status of existing claim?",
+      "intent": "ExistingClaim",
+      "entities": []
+    },
+    {
+      "text": "cancel",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "check my account balance",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "claim status",
+      "intent": "ExistingClaim",
+      "entities": []
+    },
+    {
+      "text": "do unicorns really exist",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "do you know the status of my claim?",
+      "intent": "ExistingClaim",
+      "entities": []
+    },
+    {
+      "text": "duck",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "end this now",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "exit",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "fix my glass crack",
+      "intent": "NewClaim",
+      "entities": []
+    },
+    {
+      "text": "forget about it",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "help",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "how do you work",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "i need help",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "i need some assistance",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "i need to create a new claim",
+      "intent": "NewClaim",
+      "entities": []
+    },
+    {
+      "text": "i want to order a pizza",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "im stuck",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "is it going to rain?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "just stop already",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "never mind",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "new claim",
+      "intent": "NewClaim",
+      "entities": []
+    },
+    {
+      "text": "place an item on hold",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "quit",
+      "intent": "Cancel",
+      "entities": []
+    },
+    {
+      "text": "repair my windshield",
+      "intent": "NewClaim",
+      "entities": []
+    },
+    {
+      "text": "replace my windshield",
+      "intent": "NewClaim",
+      "entities": []
+    },
+    {
+      "text": "submit a claim",
+      "intent": "NewClaim",
+      "entities": []
+    },
+    {
+      "text": "turn on the lights",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "update on my claim",
+      "intent": "ExistingClaim",
+      "entities": []
+    },
+    {
+      "text": "what can you do",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what can you help me with",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "what is the status of my claim",
+      "intent": "ExistingClaim",
+      "entities": []
+    },
+    {
+      "text": "where is my car?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "where's my claim?",
+      "intent": "ExistingClaim",
+      "entities": []
+    }
+  ],
+  "versionId": "0.1",
+  "name": "claimsbot(composer)-claimsbot.en-us.lu",
+  "desc": "Model for claimsbot app, targetting composer",
+  "culture": "en-us",
+  "tokenizerVersion": "1.0.0",
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "phraselists": [],
+  "regex_features": [],
+  "patterns": [],
+  "settings": []
+}

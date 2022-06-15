@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscription_id": {
+      "value": "9c1bf73d-cfe5-4113-bc28-5f637bb222ad"
+    },
+    "connections_cosmosdb_name": {
+      "value": "documentdb"
+    },
+    "cosmosdb_account_name": {
+      "value": "fsihackhcdbsql"
+    },
+    "cosmosdb_key": {
+      "value": "IXhpqKepxAunl9z1WGPhRRFXcW05An6MkOge4qPefcsz77ae0BOA9O9znS9QfMDURZ3jZmppdBersvZlK77MZA=="
+    },
+    "location": {
+      "value": "eastus"
+    }
+  }
+}

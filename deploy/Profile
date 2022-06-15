@@ -1,0 +1,50 @@
+{
+  "name": "bot481808",
+  "environment": "composer",
+  "tenantId": "0b9d902d-e3c1-48f1-8979-365832b339dd",
+  "hostname": "od481808webapp",
+  "runtimeIdentifier": "win-x64",
+  "resourceGroup": "FSIUC3-481808",
+  "botName": "bot481808",
+  "subscriptionId": "a96b8f1a-f683-4f26-918c-f083e93873fc",
+  "region": "eastus",
+  "appServiceOperatingSystem": "windows",
+  "scmHostDomain": "",
+  "luisResource": "luis481808-pred",
+  "settings": {
+    "applicationInsights": {
+      "InstrumentationKey": "",
+      "connectionString": ""
+    },
+    "cosmosDb": {
+      "cosmosDBEndpoint": "",
+      "authKey": "",
+      "databaseId": "",
+      "containerId": ""
+    },
+    "blobStorage": {
+      "connectionString": "",
+      "container": ""
+    },
+    "luis": {
+      "authoringKey": "92e08a712d984eca801efba8b893374b",
+      "authoringEndpoint": "https://luis481808authoring.cognitiveservices.azure.com/",
+      "endpointKey": "28a95a2de5754055ba890e370881f017",
+      "endpoint": "https://luis481808.cognitiveservices.azure.com/",
+      "region": "westus"
+    },
+    "qna": {
+      "subscriptionKey": "",
+      "endpoint": ""
+    },
+    "MicrosoftAppId": "17358174-8c54-4719-950e-ed63bf7563de",
+    "MicrosoftAppPassword": "YQ07Q~AbGQl21l72NMMyQOtUJksGutw3moyPU",
+    "publishTargets": [
+		{
+		  "name": "bot481808",
+		  "type": "azurePublish",
+		  "configuration": "{\"name\":\"bot481808\",\"environment\":\"composer\",\"tenantId\":\"0b9d902d-e3c1-48f1-8979-365832b339dd\",\"hostname\":\"od481808webapp\",\"runtimeIdentifier\":\"win-x64\",\"resourceGroup\":\"FSIUC3-481808\",\"botName\":\"bot481808\",\"subscriptionId\":\"a96b8f1a-f683-4f26-918c-f083e93873fc\",\"region\":\"eastus\",\"appServiceOperatingSystem\":\"windows\",\"scmHostDomain\":\"\",\"luisResource\":\"luis481808-pred\",\"settings\":{\"applicationInsights\":{\"InstrumentationKey\":\"\",\"connectionString\":\"\"},\"cosmosDb\":{\"cosmosDBEndpoint\":\"\",\"authKey\":\"\",\"databaseId\":\"\",\"containerId\":\"\"},\"blobStorage\":{\"connectionString\":\"\",\"container\":\"\"},\"luis\":{\"authoringKey\":\"92e08a712d984eca801efba8b893374b\",\"authoringEndpoint\":\"https://luis481808authoring.cognitiveservices.azure.com/\",\"endpointKey\":\"28a95a2de5754055ba890e370881f017\",\"endpoint\":\"https://luis481808.cognitiveservices.azure.com/\",\"region\":\"westus\"},\"qna\":{\"subscriptionKey\":\"\",\"endpoint\":\"\"},\"MicrosoftAppId\":\"17358174-8c54-4719-950e-ed63bf7563de\",\"MicrosoftAppPassword\":\"YQ07Q~AbGQl21l72NMMyQOtUJksGutw3moyPU\"}}"
+		}
+    ]
+  }
+}
