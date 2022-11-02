@@ -2,7 +2,7 @@
 
 # AI-Powered Insurance Claims Automation Accelerator
 
-Handling claims processing through an intelligent agent with cognitive skills to handle image, ID, and documents with goal to reduce claims processing time and manual effort in end-to-end claims processing for better customer experience 
+Process claims from multiple user inputs - text, speech, or image through mutliple channels. Customers can tell their own story on the platform of their choosing and just wait for a quick and accurate resolution.
 
 The accelerator will showcase Azure platform’s machine learning capability to recognize document type, extract required fields and push data to downstream applications, significantly reducing manual efforts and creating smoother customer experience.
 
@@ -13,13 +13,13 @@ The accelerator will showcase Azure platform’s machine learning capability to 
 ## Process-Flow
 
 * Customer uses voice activated intelligent agent to file a new claim via the Chat bots
-* Customer uploads the claim related document (taking pictures or uploading the images from the library) via the bot (Driving License, Insurance Card, Service Estimate, Damage of the Windshield)
+* Customer uploads the claim related documents (Driving License, Insurance Card, Service Estimate, Damage of the Windshield) by taking pictures or uploading the images from the library via the bot 
 * In the backend, the data is uploaded to **Azure Storage Services**
 * The logic app will process the uploaded documents and images from the blob storage
 * Logic app will
   * Extract the metadata from out of the box model related documents (like ID and Invoices)
   * Extract the metadata from the custom models (like insurance card)
-  * Data will be persisted and stored into data store(cosmos Db)
+  * Data will be persisted and stored into data store (Cosmos DB)
 * Cognitive Search Indexer will trigger index the documents
 * Custom UI provides the search capability into indexed document repository in Azure Search
 
