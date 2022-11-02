@@ -4,7 +4,7 @@
 
 The accelerator will showcase Azure platform’s machine learning capability to recognize document type, extract required fields and push data to downstream applications, significantly reducing manual efforts and creating smoother customer experience.
 
-By using AI, you can offer precise, customized support for each unique situation. Customer only need to have one interaction wtih a chat bot instead of being on hold with several call centers or transfered to multiple departments explaining their situations numerous times. Quick claim resolution makes customers happy with their experience and ultimately, their provider. An intelligent AI agent automatically evaluates documents, from multiple user inputs-text, speech, or image through mutliple channels-giving customers an estimate of repair and/or replacement instantly.
+By using AI, you can offer precise, customized support for each unique situation. Customers only need to have one interaction with a chat bot instead of being on hold with several call centers or transfered to multiple departments explaining their situation numerous times. Quick claim resolution makes customers happy with their experience and ultimately, their provider. An intelligent AI agent automatically evaluates documents from multiple user inputs-text, speech, or image through mutliple channels-giving customers an estimate of repair and/or replacement instantly.
 
 ## Architecture
 
