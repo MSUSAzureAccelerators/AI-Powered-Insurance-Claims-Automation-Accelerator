@@ -2,9 +2,9 @@
 
 # AI-Powered Insurance Claims Automation Accelerator
 
-Process claims from multiple user inputs - text, speech, or image through mutliple channels. Customers can tell their own story on the platform of their choosing and just wait for a quick and accurate resolution.
-
 The accelerator will showcase Azure platform’s machine learning capability to recognize document type, extract required fields and push data to downstream applications, significantly reducing manual efforts and creating smoother customer experience.
+
+By using AI, you can offer precise, customized support for each unique situation. Customer only need to have one interaction wtih a chat bot instead of being on hold with several call centers or transfered to multiple departments explaining their situations numerous times. Quick claim resolution makes customers happy with their experience and ultimately, their provider. An intelligent AI agent automatically evaluates documents, from multiple user inputs-text, speech, or image through mutliple channels-giving customers an estimate of repair and/or replacement instantly.
 
 ## Architecture
 
