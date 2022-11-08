@@ -25,7 +25,7 @@ By using AI, you can offer precise, customized support for each unique situation
 
 ## Deployment
 
-### Step 0 - Before you start (Pre-requisites)
+### Before you start (Pre-requisites)
 
 These are the key pre-requisites to deploy this accelerator:
 
